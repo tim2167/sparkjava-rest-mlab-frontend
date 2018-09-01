@@ -43,10 +43,93 @@ Here's a tutorial that shows how to test it with plain old curl at the CLI (e.g.
 * [Test a REST API with curl](https://www.baeldung.com/curl-rest)
 
 And here's an example that shows how to do the tests originally shown in the tutorial with Postman, but
-using 
+using curl.
+
+Before we start: let's acknowledge a possible confusion between:
+* `POST`, all caps, which is an HTTP method type (`GET` vs. `POST` vs. `PUT`, vs. `DELETE` etc.)
+* post, which is an example of a single message on a blog (i.e. a blog post).
+
+Those words are both spelled p-o-s-t, but they are entirely separately concepts.  I'll use `POST` when I mean
+the http method, and "post" when I just mean one of the messages on the blog, or the "object" that represents
+one of those messages.
+
+Now let's get started. Start the application running on `localhost:4567` in one terminal window using `mvn compile exec:java`.  In a second terminal window, use `curl http://localhost:4567/posts`.   This does a simple `GET` http request to the server, and what is returned in the JSON representation of all the posts currently stored on the server.  
 
 
+```
+$ curl http://localhost:4567/posts
+[ ]$ 
+```
 
+At the moment, that's an empty list, which in JSON is represneted as `[ ]`.
+
+So if we want some posts in the list, we'll need to add some.
+
+If you `cd` into the directory `testdata`, you'll see that I've created some files that represent
+blog posts formatted in JSON.  For example, the contents of the file `post1.json` is this:
+
+```json
+{
+    "title" : "A post about Spark",
+    "content" : "Spark is quite cool!",
+    "categories" : ["java","web apps"]
+}
+```
+
+The curl command can be used with the `-d` option (which stands for data) to do a `POST` request to add this post to the blog.  Here's what that looks like.    This sends a `POST` request to the url, with the payload (content) being the contents of the file `post1.json`:
+
+```
+$ curl -d @post1.json http://localhost:4567/posts
+1$
+```
+
+A few notes about that:
+
+* The response from the server was just the integer `1`; you can see that response before the `$` which is the CLI prompt.  The server responded with the `id` of the object we created.
+
+If we repeat this command a few times, we get `2`, `3`, `4` etc.:
+
+```
+$ curl -d @post1.json  http://localhost:4567/posts
+3$ curl -d @post1.json  http://localhost:4567/posts
+4$
+```
+
+If we then simply use `curl http://localhost:4567/posts` again, we get a list of all of these posts formatted in JSON:
+
+```
+$ curl http://localhost:4567/posts
+[ {
+  "id" : 1,
+  "title" : "A post about Spark",
+  "categories" : [ "java", "web apps" ],
+  "content" : "Spark is quite cool!"
+}, {
+  "id" : 2,
+  "title" : "A post about Spark",
+  "categories" : [ "java", "web apps" ],
+  "content" : "Spark is quite cool!"
+}, {
+  "id" : 3,
+  "title" : "A post about Spark",
+  "categories" : [ "java", "web apps" ],
+  "content" : "Spark is quite cool!"
+}, {
+  "id" : 4,
+  "title" : "A post about Spark",
+  "categories" : [ "java", "web apps" ],
+  "content" : "Spark is quite cool!"
+} ] $
+```
+
+If we stop and restart the webapp, we will see that since this list is just in memory, and not in a database, it does not persist (i.e. stick around).   If we want that, we need to store it in a database with each operation.
+
+So after stopping and restarting the server, once again, we have an empty list:
+
+```
+$ curl http://localhost:4567/posts
+[ ]$ 
+```
 
 # How to compile and run
 
