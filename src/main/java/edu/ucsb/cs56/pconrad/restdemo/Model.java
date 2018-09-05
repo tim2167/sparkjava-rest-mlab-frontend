@@ -1,5 +1,9 @@
 package edu.ucsb.cs56.pconrad.restdemo;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBCollection;
+	
 import java.util.Set;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,8 @@ import org.bson.Document;
 import org.apache.log4j.Logger;
 import com.mongodb.client.FindIterable;
 
+import static com.mongodb.client.model.Filters.eq;
+
 // In a real application you may want to use a DB, for this example we just store the posts in memory
 
 public class Model {
@@ -30,7 +36,6 @@ public class Model {
 	private static Logger log = Logger.getLogger(Model.class.getName());
 	
     private int nextId = 1;
-    private Map<Integer,Post> posts = new HashMap<Integer,Post>();
 
 	private MongoClientURI uri;
     private MongoClient client;
@@ -47,20 +52,40 @@ public class Model {
 
 		// get a handle to the "posts" collection
         postCollection = this.db.getCollection("posts");
+		
 	}
     
-    public int createPost(String title, String content, List categories){
-		int id = nextId++;
+	/**
+	   Code from <a href="https://stackoverflow.com/questions/32065045/auto-increment-sequence-in-mongodb-using-java">
+	   https://stackoverflow.com/questions/32065045/auto-increment-sequence-in-mongodb-using-java</a> to get next
+	   sequence number from a MongoDB database.
+	*/
+	
+	public int getNextSequence(String name) throws Exception {
+		MongoCollection<Document> collection = db.getCollection("counters");
+		collection.updateOne(eq("_id", name), new Document("$inc", new Document("seq", 1)));
+		return collection.find(eq("_id", name)).first().getInteger("seq");
+	}
+
+	// document.put("_id", getNextSequence("userid"));
+    // document.put("name","Sarah C.");
+    // collection.insert(document); // insert first doc
+
+
+	public int createPost(String title, String content, List categories) throws Exception {
+		
+		int id  = getNextSequence("postId");
+		System.out.println("\n\n\n\n\n******* nextSeq = " + id + "************\n\n\n\n\n");
+		
 		Post post = new Post();
 		post.setId(id);
 		post.setTitle(title);
 		post.setContent(content);
 		post.setCategories(categories);
-
 		String json = BlogService.dataToJson(post);
+		System.out.println("\n\n\n\n\n******* json = " + json + "************\n\n\n\n\\n");
 		postCollection.insertOne(Document.parse(json));
 		
-		posts.put(id, post);
 		return id;
     }
     
