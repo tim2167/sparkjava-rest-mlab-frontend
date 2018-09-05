@@ -9,7 +9,7 @@ import static spark.Spark.post;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import spark.Request;
 import spark.Response;
@@ -72,6 +72,22 @@ public class BlogService {
 		System.out.println("uriString=" + uriString);
 		return uriString;
 	}
+
+	public static Post json2Post(String json) throws JsonParseException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		NewPostPayload creation = mapper.readValue(json, NewPostPayload.class);
+		if (!creation.isValid()) {
+			return null;
+		} else {
+			Post p = new Post();
+			p.setTitle(creation.getTitle());
+			p.setContent(creation.getContent());
+			p.setCategories(creation.getCategories());
+			return p;
+		}
+	}
+
 	
     public static void main(String[] args) {
 	
@@ -93,27 +109,26 @@ public class BlogService {
 		// insert a post (using HTTP post method)
 		post("/posts", (request, response) -> {
 				try {
-					ObjectMapper mapper = new ObjectMapper();
-					NewPostPayload creation = mapper.readValue(request.body(), NewPostPayload.class);
-					if (!creation.isValid()) {
+					Post p = json2Post(request.body());
+					if (p==null) {
 						response.status(HTTP_BAD_REQUEST);
 						return "";
 					}
-					int id = model.createPost(creation.getTitle(), creation.getContent(), creation.getCategories());
+					
+					int id = model.createPost(p);
 					response.status(200);
 					response.type("application/json");
 					return id;
-				} catch (JsonParseException jpe) {
+				} catch (Exception e) {
 					response.status(HTTP_BAD_REQUEST);
 					return "";
-				}
-			});
-	
+				}});
+		
 		// get all post (using HTTP get method)
 		get("/posts", (request, response) -> {
 				response.status(200);
 				response.type("application/json");
-				return model.getAllPostsJSON().toString();
+				return dataToJson(model.getAllPosts());
 			});
 
 		get("/",(req,res)->"This is a REST API.  Visit <a href='/posts'><tt>/posts</tt></a>");

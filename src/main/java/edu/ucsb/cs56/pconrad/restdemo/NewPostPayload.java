@@ -3,6 +3,7 @@ package edu.ucsb.cs56.pconrad.restdemo;
 import lombok.Data;
 import java.util.List;
 import java.util.LinkedList;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
    NewPostPayload is a class that will have getters and
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 
 @Data
 class NewPostPayload {
+	private int id;
     private String title;
     private List categories = new LinkedList<>();
     private String content;

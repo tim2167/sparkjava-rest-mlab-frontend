@@ -1,5 +1,7 @@
 package edu.ucsb.cs56.pconrad.restdemo;
 
+import com.fasterxml.jackson.core.JsonParseException;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBCollection;
@@ -71,6 +73,9 @@ public class Model {
     // document.put("name","Sarah C.");
     // collection.insert(document); // insert first doc
 
+	public int createPost(Post p) throws Exception {
+		return createPost(p.getTitle(),p.getContent(),p.getCategories());
+	}
 
 	public int createPost(String title, String content, List categories) throws Exception {
 		
@@ -89,14 +94,24 @@ public class Model {
 		return id;
     }
     
-    public List<String> getAllPostsJSON(){
+    public List<Post> getAllPosts(){
 
-		List<String> result = new ArrayList<String>();
+		List<Post> result = new ArrayList<Post>();
 		
 		FindIterable<Document> docsFound = postCollection.find();
 
 		for (Document cur : docsFound) {
-			result.add(cur.toJson());
+			try {
+				String json = cur.toJson();
+				log.debug("\n\n\n\n\ncur.toJson()="+json);
+				Post p = BlogService.json2Post(json);
+				int id = cur.getInteger("id");
+				p.setId(id);
+				log.debug("Post p="+p);				
+				result.add(p);				
+			} catch (Exception e ) {
+				log.error("Exception="+e);
+			}
         }
 		
 		return result;

@@ -69,13 +69,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.5.1</version>
+      <version>2.9.6</version>
     </dependency>
     
     <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
-    <version>2.5.1</version>
+    <version>2.9.6</version>
     </dependency>
 
     <!-- Project Lombok is a java library that automatically plugs into your editor and build tools, spicing up your java.
