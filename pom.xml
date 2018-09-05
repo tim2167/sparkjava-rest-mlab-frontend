@@ -29,6 +29,15 @@
   <!-- what other software does our project depend on (third-party JARs, etc.) -->
   <dependencies>
 
+ <!-- MongoDB NoSQL Database -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongo-java-driver</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+
+    <!-- log4j -->
+    
     <dependency>
        <groupId>org.slf4j</groupId>
        <artifactId>slf4j-api</artifactId>

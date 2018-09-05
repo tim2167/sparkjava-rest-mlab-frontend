@@ -7,12 +7,40 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.sql.SQLException;
+import java.util.*;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
+
+import org.apache.log4j.Logger;
+
+
 // In a real application you may want to use a DB, for this example we just store the posts in memory
 
 public class Model {
+
+	private static Logger log = Logger.getLogger(Model.class.getName());
+	
     private int nextId = 1;
     private Map<Integer,Post> posts = new HashMap<Integer,Post>();
-    
+
+	private MongoClientURI uri;
+    private MongoClient client;
+    private MongoDatabase db;
+
+	public Model (String uriString) {
+		log.debug("Connecting to MongoDB using uriString="+uriString);
+		this.uri = new MongoClientURI(uriString); 
+		this.client = new MongoClient(uri);
+		this.db = client.getDatabase(uri.getDatabase());
+		log.debug("Connected to MongoDB, db="+this.db+" client="+this.client);
+	}
     
     public int createPost(String title, String content, List categories){
 		int id = nextId++;

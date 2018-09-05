@@ -88,7 +88,7 @@ public class BlogService {
 
 		spark.Spark.port(getHerokuAssignedPort());
 	
-		Model model = new Model();
+		Model model = new Model(uriString);
 	
 		// insert a post (using HTTP post method)
 		post("/posts", (request, response) -> {
