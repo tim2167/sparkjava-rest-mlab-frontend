@@ -73,6 +73,22 @@ public class BlogService {
 		Post p = model.getPost(request.params(":id"));
 		return dataToJson(p) + "\n";				
 	};
+
+	private Route deletePostRoute = (request, response) -> {
+		response.status(200); // TODO: Should it be something else if :id not found?
+		response.type("application/json");
+		boolean result = model.deletePost(request.params(":id"));
+		return (result?"true":"false")+"\n";
+	};
+
+	private Route updatePostRoute = (request, response) -> {
+		Post p = json2Post(request.body());
+		response.status(200); // TODO: Should it be something else if :id not found?
+		response.type("application/json");
+		Model.PostUpdateResult result = model.updatePost(request.params(":id"),p);
+		return dataToJson(result)+"\n";
+	};
+
 	
 	private ArrayList<RouteEntry> routeEntries = new ArrayList<RouteEntry>();
 	
@@ -83,6 +99,10 @@ public class BlogService {
 				spark.Spark.get(re.getUri(),re.getRoute());
 			} else if (re.getHttpMethod().equals("POST")) {
 				spark.Spark.post(re.getUri(),re.getRoute());
+			} else if (re.getHttpMethod().equals("PUT")) {
+				spark.Spark.post(re.getUri(),re.getRoute());				
+			} else if (re.getHttpMethod().equals("DELETE")) {
+				spark.Spark.delete(re.getUri(),re.getRoute());
 			} else {				
 				log.error("Route entry has unknown HTTP Method: " + re);
 				throw new RuntimeException("Unknown HTTP Method: " + re);
@@ -95,7 +115,9 @@ public class BlogService {
 		this.routeEntries.add(new RouteEntry("GET","/", homePageRoute, "home page that describes the API"));
 		this.routeEntries.add(new RouteEntry("GET","/posts", getAllPostsRoute, "get all Posts"));
 		this.routeEntries.add(new RouteEntry("POST","/posts", newPostRoute, "add a new Post"));
-		this.routeEntries.add(new RouteEntry("POST","/posts/:id", getPostRoute, "get Post with id <code>:id</code>"));
+		this.routeEntries.add(new RouteEntry("GET","/posts/:id", getPostRoute, "get Post with id <code>:id</code>"));
+		this.routeEntries.add(new RouteEntry("PUT","/posts/:id",updatePostRoute, "update Post with id <code>:id</code>"));
+		this.routeEntries.add(new RouteEntry("DELETE","/posts/:id",deletePostRoute, "delete Post with id <code>:id</code>"));
 		
 		setUpRoutes();
 	}

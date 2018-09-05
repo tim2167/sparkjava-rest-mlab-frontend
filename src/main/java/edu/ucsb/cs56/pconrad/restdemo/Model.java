@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.mongodb.client.model.ReturnDocument.AFTER;
+import static com.mongodb.client.model.ReturnDocument.BEFORE;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
 
 import org.apache.log4j.Logger;
 
@@ -134,5 +137,67 @@ public class Model {
 		return result;
     }
 
+	public Post doc2Post(Document d) {
+		Post post = null;
+		try {
+			String json = d.toJson();
+			post = BlogService.json2Post(json);			
+			int id_ = d.getInteger("id");
+			post.setId(id_);
+		} catch (Exception e) {
+			log.debug("ERROR: " + e.toString());
+		}
+		return post;
+	}
+	
+    public PostUpdateResult updatePost(String id, Post newPost){
+		log.debug("****** updatePost with id=" + id);
+		PostUpdateResult result = null;
+
+		try {
+			newPost.setId(Integer.parseInt(id));
+			Document replacementDocument =
+				Document.parse(BlogService.dataToJson(newPost));
+			FindOneAndReplaceOptions options =
+				new FindOneAndReplaceOptions().returnDocument(AFTER);
+			Document oldDocument =
+				postCollection.find(eq("id", Integer.parseInt(id))).first();
+
+			Document newDocument =
+				postCollection.findOneAndReplace(eq("id", Integer.parseInt(id)),
+												 replacementDocument,
+												 options);
+			result = new PostUpdateResult(doc2Post(oldDocument),doc2Post(newDocument));
+			
+		} catch (Exception e ) {
+			log.error("Exception="+e);
+		}
+		return result;
+    }
+
+	@lombok.Data
+	public static class PostUpdateResult {
+		private Post before;
+		private Post after;
+		public PostUpdateResult(Post before, Post after) {
+			this.before = before;
+			this.after = after;
+		}
+	}
+	
+    public boolean deletePost(String id){
+		log.debug("****** deletePost with id=" + id);
+		boolean result = false;
+
+		try {
+			Document cur=
+				postCollection.findOneAndDelete(eq("id", Integer.parseInt(id)));
+			result = (cur!=null);
+		} catch (Exception e ) {
+			log.error("Exception="+e);
+			result = false;
+		}
+		return result;
+    }
 	
 }

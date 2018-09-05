@@ -131,6 +131,14 @@ $ curl http://localhost:4567/posts
 [ ]$ 
 ```
 
+To test methods other than `GET` and `POST`, use the `-X` flag.  For example, to
+test `DELETE` method, you can use:
+
+```
+$ curl -X DELETE http://localhost:4567/posts/13
+```
+
+
 # How to compile and run
 
 | To do this | Do this |
