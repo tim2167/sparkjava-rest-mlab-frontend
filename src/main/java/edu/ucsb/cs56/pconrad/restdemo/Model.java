@@ -14,9 +14,11 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 
 import org.apache.log4j.Logger;
 
@@ -34,12 +36,17 @@ public class Model {
     private MongoClient client;
     private MongoDatabase db;
 
+	private MongoCollection<Document> postCollection;
+	
 	public Model (String uriString) {
 		log.debug("Connecting to MongoDB using uriString="+uriString);
 		this.uri = new MongoClientURI(uriString); 
 		this.client = new MongoClient(uri);
 		this.db = client.getDatabase(uri.getDatabase());
 		log.debug("Connected to MongoDB, db="+this.db+" client="+this.client);
+
+		// get a handle to the "posts" collection
+        postCollection = this.db.getCollection("posts");
 	}
     
     public int createPost(String title, String content, List categories){
@@ -49,6 +56,10 @@ public class Model {
 		post.setTitle(title);
 		post.setContent(content);
 		post.setCategories(categories);
+
+		String json = BlogService.dataToJson(post);
+		postCollection.insertOne(Document.parse(json));
+		
 		posts.put(id, post);
 		return id;
     }
