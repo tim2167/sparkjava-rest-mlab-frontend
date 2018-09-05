@@ -112,26 +112,33 @@ public class BlogService {
 					Post p = json2Post(request.body());
 					if (p==null) {
 						response.status(HTTP_BAD_REQUEST);
-						return "";
+						return "\n";
 					}
 					
 					int id = model.createPost(p);
 					response.status(200);
 					response.type("application/json");
-					return id;
+					return id+"\n";
 				} catch (Exception e) {
 					response.status(HTTP_BAD_REQUEST);
-					return "";
+					return "\n";
 				}});
 		
 		// get all post (using HTTP get method)
 		get("/posts", (request, response) -> {
 				response.status(200);
 				response.type("application/json");
-				return dataToJson(model.getAllPosts());
+				return dataToJson(model.getAllPosts()) + "\n";
 			});
 
-		get("/",(req,res)->"This is a REST API.  Visit <a href='/posts'><tt>/posts</tt></a>");
+		get("/posts/:id", (request, response) -> {
+				response.status(200);
+				response.type("application/json");
+				Post p = model.getPost(request.params(":id"));
+				return dataToJson(p) + "\n";				
+			});
+		
+		get("/",(req,res)->"This is a REST API.  Visit <a href='/posts'><tt>/posts</tt></a>\n");
     }
     
     static int getHerokuAssignedPort() {

@@ -116,4 +116,23 @@ public class Model {
 		
 		return result;
     }
+
+    public Post getPost(String id){
+		log.debug("****** getPost with id=" + id);
+		Post result = null;
+
+		try {
+			Document cur=postCollection.find(eq("id", Integer.parseInt(id))).first();
+		
+			String json = cur.toJson();
+			result = BlogService.json2Post(json);
+			int id_ = cur.getInteger("id");
+			result.setId(id_);
+		} catch (Exception e ) {
+			log.error("Exception="+e);
+		}
+		return result;
+    }
+
+	
 }
