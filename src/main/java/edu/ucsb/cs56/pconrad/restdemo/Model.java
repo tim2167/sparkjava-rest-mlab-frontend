@@ -35,7 +35,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Model {
 
-	private static Logger log = Logger.getLogger(Model.class.getName());
+	private static Logger log = BlogService.log;
 	
     private int nextId = 1;
 

@@ -1,10 +1,10 @@
 package edu.ucsb.cs56.pconrad.restdemo;
 
-
 // SEE: http://sparkjava.com/tutorials/reducing-java-boilerplate
 
 import static spark.Spark.get;
 import static spark.Spark.post;
+import spark.Route;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,25 +20,96 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collector;
 
+import org.apache.log4j.Logger;
 
 public class BlogService {
-    
+
+	public  static final Logger log = Logger.getLogger(Model.class.getName());
+	
     private static final int HTTP_BAD_REQUEST = 400;
 
+	private Model model;
 
-	  /**
-       return a HashMap with values of all the environment variables
-       listed; print error message for each missing one, and exit if any
-       of them is not defined.
-    */
-    
-    public static HashMap<String,String> getNeededEnvVars(String [] neededEnvVars) {
+	// Lambda functionss for routes
 
-        ProcessBuilder processBuilder = new ProcessBuilder();
-    		
+	Route homePageRoute = (req,res)->{
+		String result = "<p>This is a RESTFul API for blog posts</p>\n" + getRoutesAsHTMLTable() + "\n";		
+		return result;
+	};
+
+	private Route newPostRoute =
+		(request, response) -> {
+		try {
+			Post p = json2Post(request.body());
+			if (p==null) {
+				response.status(HTTP_BAD_REQUEST);
+				return "\n";
+			}
+			
+			int id = model.createPost(p);
+			response.status(200);
+			response.type("application/json");
+			return id+"\n";
+		} catch (Exception e) {
+			response.status(HTTP_BAD_REQUEST);
+			return "\n";
+		}
+	};
+
+	private Route getAllPostsRoute = (request, response) -> {
+		response.status(200);
+		response.type("application/json");
+		return dataToJson(model.getAllPosts()) + "\n";
+	};
+
+
+	private Route getPostRoute = (request, response) -> {
+		response.status(200);
+		response.type("application/json");
+		Post p = model.getPost(request.params(":id"));
+		return dataToJson(p) + "\n";				
+	};
+	
+	private ArrayList<RouteEntry> routeEntries = new ArrayList<RouteEntry>();
+	
+	public void setUpRoutes() {
+		for (RouteEntry re : this.routeEntries) {
+			log.debug("Registering RouteEntry: " + re.toString());
+			if (re.getHttpMethod().equals("GET")) {
+				spark.Spark.get(re.getUri(),re.getRoute());
+			} else if (re.getHttpMethod().equals("POST")) {
+				spark.Spark.post(re.getUri(),re.getRoute());
+			} else {				
+				log.error("Route entry has unknown HTTP Method: " + re);
+				throw new RuntimeException("Unknown HTTP Method: " + re);
+			}			
+		}
+	}
+	
+	public BlogService(String databaseUri) {		
+		model = new Model(databaseUri);
+		this.routeEntries.add(new RouteEntry("GET","/", homePageRoute, "home page that describes the API"));
+		this.routeEntries.add(new RouteEntry("GET","/posts", getAllPostsRoute, "get all Posts"));
+		this.routeEntries.add(new RouteEntry("POST","/posts", newPostRoute, "add a new Post"));
+		this.routeEntries.add(new RouteEntry("POST","/posts/:id", getPostRoute, "get Post with id <code>:id</code>"));
+		
+		setUpRoutes();
+	}
+
+	/**
+	   return a HashMap with values of all the environment variables
+	   listed; print error message for each missing one, and exit if any
+	   of them is not defined.
+	*/
+	
+	public static HashMap<String,String> getNeededEnvVars(String [] neededEnvVars) {
+		
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		
 		HashMap<String,String> envVars = new HashMap<String,String>();
 		
 		boolean error=false;		
@@ -50,16 +121,16 @@ public class BlogService {
 				error = true;
 				System.err.println("Error: Must define env variable " + k);
 			}
-        }
+		}
 		
 		if (error) { System.exit(1); }
-
+		
 		System.out.println("envVars=" + envVars);
 		return envVars;	 
-    }
+	}
 	
 	public static String mongoDBUri(HashMap<String,String> envVars) {
-
+		
 		System.out.println("envVars=" + envVars);
 		
 		// mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
@@ -72,7 +143,7 @@ public class BlogService {
 		System.out.println("uriString=" + uriString);
 		return uriString;
 	}
-
+	
 	public static Post json2Post(String json) throws JsonParseException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -87,10 +158,9 @@ public class BlogService {
 			return p;
 		}
 	}
-
 	
-    public static void main(String[] args) {
-	
+	public static void main(String[] args) {
+		
 		HashMap<String,String> envVars =  
 			getNeededEnvVars(new String []{
 					"MONGODB_USER",
@@ -101,46 +171,13 @@ public class BlogService {
 				});
 		
 		String uriString = mongoDBUri(envVars);
-
+		
 		spark.Spark.port(getHerokuAssignedPort());
-	
-		Model model = new Model(uriString);
-	
-		// insert a post (using HTTP post method)
-		post("/posts", (request, response) -> {
-				try {
-					Post p = json2Post(request.body());
-					if (p==null) {
-						response.status(HTTP_BAD_REQUEST);
-						return "\n";
-					}
-					
-					int id = model.createPost(p);
-					response.status(200);
-					response.type("application/json");
-					return id+"\n";
-				} catch (Exception e) {
-					response.status(HTTP_BAD_REQUEST);
-					return "\n";
-				}});
 		
-		// get all post (using HTTP get method)
-		get("/posts", (request, response) -> {
-				response.status(200);
-				response.type("application/json");
-				return dataToJson(model.getAllPosts()) + "\n";
-			});
-
-		get("/posts/:id", (request, response) -> {
-				response.status(200);
-				response.type("application/json");
-				Post p = model.getPost(request.params(":id"));
-				return dataToJson(p) + "\n";				
-			});
-		
-		get("/",(req,res)->"This is a REST API.  Visit <a href='/posts'><tt>/posts</tt></a>\n");
+		BlogService bs = new BlogService(uriString);
+		log.debug("BlogService.main() is finished... listening for requests.");
     }
-    
+	
     static int getHerokuAssignedPort() {
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder();
@@ -153,8 +190,7 @@ public class BlogService {
 		}       
         return 4567; // default if PORT isn't set
     }
-    
-
+    	
     public static String dataToJson(Object data) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -167,6 +203,21 @@ public class BlogService {
 		}
     }
 
+	public String getRoutesAsHTMLTable() {
+		String result = "<table>\n" +
+			" <thead><tr><th>method</th><th>uri</th><th>description</th></tr><thead>\n" + " <tbody>\n";
+
+		for (RouteEntry re : this.routeEntries) {
+			result += "  <tr>\n";
+			result += "   <td><code>" + re.getHttpMethod()+ "</code></td>\n";
+			result += "   <td><code>" + re.getUri() + "</code></td>\n";
+			result += "   <td>" + re.getDescription() + "</td>\n";
+			result += "  </tr>\n";
+		}
+		result += " </tbody>\n</table>\n";
+
+		return result;
+	}
 }
 
     
