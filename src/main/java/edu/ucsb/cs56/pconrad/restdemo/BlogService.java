@@ -113,7 +113,7 @@ public class BlogService {
 		get("/posts", (request, response) -> {
 				response.status(200);
 				response.type("application/json");
-				return dataToJson(model.getAllPosts());
+				return model.getAllPostsJSON().toString();
 			});
 
 		get("/",(req,res)->"This is a REST API.  Visit <a href='/posts'><tt>/posts</tt></a>");

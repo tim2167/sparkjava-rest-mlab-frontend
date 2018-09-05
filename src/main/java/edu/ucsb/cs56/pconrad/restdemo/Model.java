@@ -21,7 +21,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import org.apache.log4j.Logger;
-
+import com.mongodb.client.FindIterable;
 
 // In a real application you may want to use a DB, for this example we just store the posts in memory
 
@@ -64,12 +64,16 @@ public class Model {
 		return id;
     }
     
-    public List getAllPosts(){
-		Map<Integer, Post> thePosts = this.posts;
-		Set<Integer> keyset = thePosts.keySet();
-		Stream<Integer> stream=keyset.stream();
-		stream = stream.sorted();
-		Stream<Post> postsStream = stream.map((id)->posts.get(id));
-		return postsStream.collect(Collectors.toList());
+    public List<String> getAllPostsJSON(){
+
+		List<String> result = new ArrayList<String>();
+		
+		FindIterable<Document> docsFound = postCollection.find();
+
+		for (Document cur : docsFound) {
+			result.add(cur.toJson());
+        }
+		
+		return result;
     }
 }
