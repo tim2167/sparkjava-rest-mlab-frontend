@@ -1,4 +1,10 @@
 
+sparkjava-lombok-jackson-example.iml
+.idea/
+logs/
+env.sh
+
+
 \#*\#
 *~
 target/

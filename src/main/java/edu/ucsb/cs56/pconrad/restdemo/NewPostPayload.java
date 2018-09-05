@@ -1,4 +1,4 @@
-package me.tomassetti;
+package edu.ucsb.cs56.pconrad.restdemo;
 
 import lombok.Data;
 import java.util.List;

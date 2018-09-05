@@ -1,4 +1,4 @@
-package me.tomassetti;
+package edu.ucsb.cs56.pconrad.restdemo;
 
 import java.util.List;
 import java.util.Map;
