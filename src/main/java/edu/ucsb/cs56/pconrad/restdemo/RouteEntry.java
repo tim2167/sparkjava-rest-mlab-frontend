@@ -2,6 +2,7 @@ package edu.ucsb.cs56.pconrad.restdemo;
 
 import lombok.Data;
 
+
 /**
    RouteEntry is a class that will have getters and
    setters by virtue of Lombok (<a href="https://projectlombok.org/">https://projectlombok.org</a>)
@@ -15,7 +16,6 @@ class RouteEntry {
 	private spark.Route route;
     private String description;
 
-
 	RouteEntry(String httpMethod,
 			   String uri,
 			   spark.Route route,
@@ -23,7 +23,8 @@ class RouteEntry {
 		this.httpMethod = httpMethod;
 		this.uri = uri;
 		this.route = route;
-		this.description = description;
+		this.description = description;		
 	}
+
 }
 

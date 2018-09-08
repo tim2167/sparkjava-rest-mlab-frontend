@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collector;
 
+import spark.TemplateEngine;
+import spark.template.mustache.MustacheTemplateEngine;
+import spark.ModelAndView;
+
 import org.apache.log4j.Logger;
 
 public class BlogService {
@@ -34,9 +38,13 @@ public class BlogService {
 
 	private Model model;
 
-	// Lambda functionss for routes
+	private Map<String,Object> map = new HashMap<String,Object>();
+	
+	// Lambda functions for routes
 
-	Route homePageRoute = (req,res)->{
+
+
+    Route apiRoute = (req,res)->{
 		String result = "<p>This is a RESTFul API for blog posts</p>\n" + getRoutesAsHTMLTable() + "\n";		
 		return result;
 	};
@@ -96,9 +104,9 @@ public class BlogService {
 		for (RouteEntry re : this.routeEntries) {
 			log.debug("Registering RouteEntry: " + re.toString());
 			if (re.getHttpMethod().equals("GET")) {
-				spark.Spark.get(re.getUri(),re.getRoute());
+				spark.Spark.get(re.getUri(),re.getRoute());				
 			} else if (re.getHttpMethod().equals("POST")) {
-				spark.Spark.post(re.getUri(),re.getRoute());
+				spark.Spark.post(re.getUri(),re.getRoute());				
 			} else if (re.getHttpMethod().equals("PUT")) {
 				spark.Spark.post(re.getUri(),re.getRoute());				
 			} else if (re.getHttpMethod().equals("DELETE")) {
@@ -112,12 +120,20 @@ public class BlogService {
 	
 	public BlogService(String databaseUri) {		
 		model = new Model(databaseUri);
-		this.routeEntries.add(new RouteEntry("GET","/", homePageRoute, "home page that describes the API"));
-		this.routeEntries.add(new RouteEntry("GET","/posts", getAllPostsRoute, "get all Posts"));
-		this.routeEntries.add(new RouteEntry("POST","/posts", newPostRoute, "add a new Post"));
-		this.routeEntries.add(new RouteEntry("GET","/posts/:id", getPostRoute, "get Post with id <code>:id</code>"));
-		this.routeEntries.add(new RouteEntry("PUT","/posts/:id",updatePostRoute, "update Post with id <code>:id</code>"));
-		this.routeEntries.add(new RouteEntry("DELETE","/posts/:id",deletePostRoute, "delete Post with id <code>:id</code>"));
+		
+
+		get("/", (rq, rs) -> new ModelAndView(map, "home.mustache"), new MustacheTemplateEngine());
+
+		get("/list", (rq, rs) -> new ModelAndView(map, "list.mustache"), new MustacheTemplateEngine());
+				
+		// Only API routes can be set up through the routeEntries table; Template Engines are not supported
+		
+		this.routeEntries.add(new RouteEntry("GET","/api", apiRoute, "description of the API"));
+		this.routeEntries.add(new RouteEntry("GET","/api/posts", getAllPostsRoute, "get all Posts"));
+		this.routeEntries.add(new RouteEntry("POST","/api/posts", newPostRoute, "add a new Post"));
+		this.routeEntries.add(new RouteEntry("GET","/api/posts/:id", getPostRoute, "get Post with id <code>:id</code>"));
+		this.routeEntries.add(new RouteEntry("PUT","/api/posts/:id",updatePostRoute, "update Post with id <code>:id</code>"));
+		this.routeEntries.add(new RouteEntry("DELETE","/api/posts/:id",deletePostRoute, "delete Post with id <code>:id</code>"));
 		
 		setUpRoutes();
 	}
