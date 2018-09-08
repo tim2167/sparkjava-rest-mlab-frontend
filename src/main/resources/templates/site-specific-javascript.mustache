@@ -4,15 +4,16 @@
 var site_globals = {};
 
 function handleGetPosts(data) {
-
-    
     // write message to console (for debugging only)
     console.log("handleGetPosts: " + JSON.stringify(data));
 
-    // a for loop over the array of posts
-    
+    // Get rid of posts already in the table
+    $('tbody.post-table-body tr.post-data').remove();
+
+    // a for loop over the array of posts    
     $.each(data,function(i,post) {
 	var row = $("<tr></tr>");
+	row.addClass('post-data');
 	row.append($("<td></td>").text(post.id));
 	row.append($("<td></td>").text(post.title));
 	row.append($("<td></td>").text(JSON.stringify(post.categories)));
@@ -20,19 +21,39 @@ function handleGetPosts(data) {
 	$('tbody.post-table-body').append(row);
     });
 
-    // remove the loading element inside the table
-    $('tbody.post-table-body tr.tr-3col-loading').remove();
-}	  
+    $('tbody.post-table-body tr.tr-3col-loading').hide('slow', function(){
+	$('tbody.post-table-body tr.tr-3col-loading').remove();
+    });
     
+}	  
+
+function requestRefreshPosts() {
+
+    // write message to console (for debugging only)
+    console.log("requestRefreshPosts");
+
+    // add the loading element at the top of the table
+		
+    $('tbody.post-table-body').prepend(site_globals.tr_3col_loading);
+		    // load the posts once when the page first loads
+    $.ajax({
+	url: "/api/posts"
+    }).then(handleGetPosts);
+
+}	  
+
 $(document).ready(function() {
     // grab a copy of the #tr-3col-loading element
 
-    site_globals.tr_3col_loading = $(".tr-3col-loading").first().clone();
+    site_globals.tr_3col_loading = $("tr.tr-3col-loading").first().clone();
 
     // load the posts once when the page first loads
     $.ajax({
 	url: "/api/posts"
     }).then(handleGetPosts);
+
+    $("button.refresh-button").click(requestRefreshPosts);
+
 });
 
 </script>
