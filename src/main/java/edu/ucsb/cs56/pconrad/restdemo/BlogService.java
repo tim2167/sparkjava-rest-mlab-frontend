@@ -123,6 +123,7 @@ public class BlogService {
 		
 
 		get("/", (rq, rs) -> new ModelAndView(map, "home.mustache"), new MustacheTemplateEngine());
+		get("/add", (rq, rs) -> new ModelAndView(map, "add.mustache"), new MustacheTemplateEngine());
 
 				
 		// Only API routes can be set up through the routeEntries table; Template Engines are not supported

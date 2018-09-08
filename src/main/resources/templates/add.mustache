@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> head }}
+<body>
+ {{> nav }}
+ <h1>Blog Posts</h1>
+
+ <!-- Some of the class values are taken from
+      https://www.w3schools.com/bootstrap4/bootstrap_tables.asp -->
+
+
+ <!-- See: https://code.tutsplus.com/tutorials/submit-a-form-without-page-refresh-using-jquery--net-59 
+and  https://learn.jquery.com/ajax/ajax-and-forms/ -->
+ 
+ <h1>Add a Post</h1>
+ <p>Note that this simple example only allows adding one category. A later demo will show how to
+   add multiple categories</p>
+ 
+ <form id="add-post-single-category" name="add-post-single-category" action="">
+   <fieldset>
+     <label for="title" id="title_label">Title</label>
+     <input type="text" name="title" id="title" size="30" value="" class="text-input" />
+     <label class="error" for="title" id="title_error">This field is required.</label>
+
+     <label for="category1" id="category1_label">Category</label>
+     <input type="text" name="category1" id="category1" size="30" value="" class="text-input" />
+     <label class="error" for="category1" id="category1_error">This field is required.</label>
+
+     <br />
+     <input type="button" name="submit" class="submit_add_post" id="submit_btn" value="Add Post" />
+   </fieldset>
+   </form>
+ 
+ 
+ {{> scripts-from-cdn }}
+ {{> site-specific-javascript-add }}
+</body>
+</html>
