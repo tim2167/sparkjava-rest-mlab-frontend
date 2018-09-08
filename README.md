@@ -79,7 +79,34 @@ To fix this, you need to take the following steps.  Note that the steps involvin
    
    Now, we'll move on to the other values in the `env.sh` file.
    
+9. For these values, you are going to find these on the Mlab screen for your database:
    
+  * For `MONGODB_NAME` change it from `cs56-m18-demo` to whatever the name of your database is (e.g. `mlab-blog-demo`)
+  * For `MONGODB_HOST` and `MONGO_PORT` find the thing that says:
+      ``` 
+      To connect using the mongo shell:
+        mongo ds144023.mlab.com:47245/cs56-m18-demo -u <dbuser> -p <dbpassword>
+      ```
+      In this example, `MONGODB_HOST` should be `ds144023.mlab.com` and `MONGODB_PORT` should be `47245`.
+      
+10. Once you've made these edits, you need to type the following so that these environment variables take effect:
+   ```
+   . env.sh
+   ```
+   This sets up the environment variables that the Java code will read from.
+   
+   While the previous steps 1-9 are "one time only" steps, this final step must be done each time you log in to a term Unix terminal
+   session; the environment variable are defined as part of the current process.
+   
+Once you've done these steps, you should be able to run and not see the error message about defining environment variables.
+
+```
+Error: Must define env variable MONGODB_USER
+etc..
+```
+
+So try doing `mvn compile exec:java` again, and visiting `http://localhost:4567`
+      
 # More detail
 
 This code shows a way to use:
