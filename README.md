@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 # sparkjava-rest-mlab-front-end
 
 This tutorial code is based on
 
-* Starting with the code presented in the SparkJava tutorial [reducing-java-boilerplate](http://sparkjava.com/tutorials/reducing-java-boilerplate), in the repo []() which covers:
+* Starting with the code presented in the SparkJava tutorial [reducing-java-boilerplate](http://sparkjava.com/tutorials/reducing-java-boilerplate), in the repo [sparkjava-lombok-jackson-example](https://github.com/ucsb-cs56-pconrad/sparkjava-lombok-jackson-example) which covers:
    * Building a RESTFul API for a Blog (i.e. ability to create and list posts (POST and GET))
    * Using Lombok to reduce Java boilerplate code (i.e. automatically generating getters, setters, `toString`, `hashCode`, etc.)
    * Using Jackson and Gson to convert data to/from JSON Automatically
@@ -30,7 +29,7 @@ This code shows a way to use:
 * Building a RESTful API (one that "speaks in JSON") using SparkJava
 
 
-# How is the code in this repo modified from the original
+# Modifications from the original [reducing-java-boilerplate](http://sparkjava.com/tutorials/reducing-java-boilerplate) tutorial:
 
 * The original is all in one `.java` source file.  I broke it up.
    * All one source file is convenient for a  quick demo example.
@@ -39,13 +38,10 @@ This code shows a way to use:
    * I added the port number settings, a `Procfile`, and the Maven code in the `pom.xml` to enable `mvn heroku:deploy`
 * The original uses `Map` instead of `Map<Integer,Post>`, for example, which triggers deprecation warnings, and in one case, a compiler fatal error.
    * I modified the code to remove these issues.
-
-
    
-# Testing
+# Testing the RESTful API:
 
 Since this app is a RESTFUL api that "speaks JSON", you'll need to use special techniques to test it.
-
 
 The original tutorial shows testing it with a Chrome extension called Postman, but that Chrome extension
 appears to be deprecated, and the replacements for it are heavyweight, and require giving access to your
