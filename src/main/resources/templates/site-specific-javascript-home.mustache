@@ -23,9 +23,21 @@ function handleGetPosts(data) {
 	$('tbody.post-table-body').append(row);
     });
 
+    function updateForDelete(data) {
+	if (data) {
+	    requestRefreshPosts();
+	}
+    }
+    
     $("td.delete-button").click(function() {
-	console.log("Delete button was clicked: " + $(this).data("id"));	
+	console.log("Delete button was clicked: " + $(this).data("id"));
+	$.ajax({
+	    url: '/api/posts/' + $(this).data("id"),
+	    type: 'DELETE'
+	}).then(updateForDelete)
     });
+
+    
 
     $('tbody.post-table-body tr.tr-loading').hide('slow', function(){
 	$('tbody.post-table-body tr.tr-loading').remove();
