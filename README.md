@@ -1,10 +1,25 @@
 <<<<<<< HEAD
-# sparkjava-lombok-jackson-example
-Code based on http://sparkjava.com/tutorials/reducing-java-boilerplate
+# sparkjava-rest-mlab-front-end
 
-# What does this tutorial present?
+This tutorial code is based on
 
-It shows a way to use:
+* Starting with the code presented in the SparkJava tutorial [reducing-java-boilerplate](http://sparkjava.com/tutorials/reducing-java-boilerplate), in the repo []() which covers:
+   * Building a RESTFul API for a Blog (i.e. ability to create and list posts (POST and GET))
+   * Using Lombok to reduce Java boilerplate code (i.e. automatically generating getters, setters, `toString`, `hashCode`, etc.)
+   * Using Jackson and Gson to convert data to/from JSON Automatically
+   * Using a Model that is basically just an ArrayList in memory
+* Extending it first, in the repo [sparkjava-rest-with-mlab](https://github.com/ucsb-cs56-pconrad/sparkjava-rest-with-mlab) to:
+   * A full RESTful API and a database backend. In particular:
+   * Adding additional methods PUT and DELETE so that full CRUD operations (Create, Read, Update, Destroy) are supported
+   * Adding a way of self-documenting the RESTful API (which is a principle of REST)
+   * Adding a true database backend using MongoDB (over the free tier or Mlab for example)
+* Then, in this repo, [sparkjava-rest-mlab-frontend](https://github.com/ucsb-cs56-pconrad/sparkjava-rest-mlab-frontend), extending [sparkjava-rest-with-mlab](https://github.com/ucsb-cs56-pconrad/sparkjava-rest-with-mlab) with:
+   * Code from [sparkjava-mustache-example-02](https://github.com/ucsb-cs56-pconrad/sparkjava-mustache-example-02) that incorporates using Mustache Templates, Bootstrap and JQuery to build a front-end
+   * Code that uses JQuery methods to build a single page front-end that allows access to all of the RESTful API methods of the backend.
+
+# More detail
+
+This code shows a way to use:
 * Lombok (<https://projectlombok.org>) to reduce the Java boilerplate you need for pure data classes.
    * Basically, you put `@lombok.Data` on your class, and then you don't need to write constructors, getters,
       setters, `toString`, `equals`, `hashCode`, etc.   Lombok does it for you.
@@ -14,8 +29,6 @@ It shows a way to use:
 * Jackson and Gson to convert data to/from JSON automatically
 * Building a RESTful API (one that "speaks in JSON") using SparkJava
 
-It does NOT show this in the context of a database, but it could be easily extended to, for example, store the
-data in a NoSQL database based on JSON such as MongoDB (running, for example, on the free tier of [mlab.com](https://mlab.com/).
 
 # How is the code in this repo modified from the original
 
