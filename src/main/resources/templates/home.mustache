@@ -3,7 +3,29 @@
 {{> head }}
 <body>
  {{> nav }}
- <h1>Hello {{name}}</h1>
+ <h1>Blog Posts</h1>
+
+ <!-- Some of the class values are taken from
+      https://bootstrapdocs.com/v3.3.6/docs/css/#tables -->
+ 
+ <table class="posts-table table table-striped table-hover table-responsive table-condensed">
+   <thead>
+     <tr><th>id</th><th>title</th><th>categories</th></tr>
+   </thead>
+   <tbody class="post-table-body">
+     <tr class="tr-3col-loading">
+       <td class="loading" colspan="3">
+	 <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+	 Loading...
+       </td>
+     </tr>
+   </tbody>
+ </table>
+
+ 
+ 
+ 
  {{> bootstrap-from-cdn-body }}
+ {{> site-specific-javascript }}
 </body>
 </html>
