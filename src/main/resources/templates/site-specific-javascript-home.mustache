@@ -14,13 +14,17 @@ function handleGetPosts(data) {
     $.each(data, function(i,post) {
 	var row = $("<tr></tr>");
 	row.addClass('post-data');
-	row.append($("<td class='delete-button'></td>").html("<i class='fa fa-remove'>&#xf00d;</i>"));
+	row.append($("<td class='delete-button' data-id='" + post.id +  "'></td>").html("<i class='fa fa-remove'>&#xf00d;</i>"));
 	row.append($("<td></td>").text(post.id));
 	row.append($("<td></td>").text(post.title));
 	row.append($("<td></td>").text(post.content));
 	row.append($("<td></td>").text(JSON.stringify(post.categories)));
 	// Append this to every <tbody class="put-posts-here"> element
 	$('tbody.post-table-body').append(row);
+    });
+
+    $("td.delete-button").click(function() {
+	console.log("Delete button was clicked: " + $(this).data("id"));	
     });
 
     $('tbody.post-table-body tr.tr-loading').hide('slow', function(){
