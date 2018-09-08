@@ -15,21 +15,27 @@ and  https://learn.jquery.com/ajax/ajax-and-forms/ -->
  <h1>Add a Post</h1>
  <p>Note that this simple example only allows adding one category. A later demo will show how to
    add multiple categories</p>
+
+<div class="alert-area"></div>
  
- <form id="add-post-single-category" name="add-post-single-category" action="">
+<form id="add-post-single-category" name="add-post-single-category" action="">
    <fieldset>
+
      <label for="title" id="title_label">Title</label>
      <input type="text" name="title" id="title" size="30" value="" class="text-input" />
-     <label class="error" for="title" id="title_error">This field is required.</label>
+     <br><br>
 
-     <label for="category1" id="category1_label">Category</label>
-     <input type="text" name="category1" id="category1" size="30" value="" class="text-input" />
-     <label class="error" for="category1" id="category1_error">This field is required.</label>
+     <label for="content" id="content_label">Content</label>
+     <input type="text" name="content" id="content" size="50" value="" class="text-input" />
+     <br><br>
 
-     <br />
+     <label for="category1" id="category1_label">Categories (separate by commas)</label>
+     <input type="text" name="categories" id="categories1" size="30" value="" class="text-input" />
+     <br><br>
+
      <input type="button" name="submit" class="submit_add_post" id="submit_btn" value="Add Post" />
    </fieldset>
-   </form>
+ </form>
  
  
  {{> scripts-from-cdn }}

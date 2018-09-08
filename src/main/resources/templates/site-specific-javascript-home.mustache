@@ -33,7 +33,9 @@ function handleGetPosts(data) {
 	console.log("Delete button was clicked: " + $(this).data("id"));
 	$.ajax({
 	    url: '/api/posts/' + $(this).data("id"),
-	    type: 'DELETE'
+	    type: 'DELETE',
+	    contentType: "application/json; charset=utf-8", 
+            dataType: "json"
 	}).then(updateForDelete)
     });
 
